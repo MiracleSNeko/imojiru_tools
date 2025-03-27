@@ -4,8 +4,8 @@ resolver = "2"
 
 [workspace.package]
 name = "imojiru_tools"
-authors = []
-repository = ""
+authors = ["MiracleSNeko <miracle.neko@qq.com>"]
+repository = "https://github.com/MiracleSNeko/imojiru_tools"
 edition = "2024"
 rust-version = "1.85"
 license = "MIT or Apache-2.0"
