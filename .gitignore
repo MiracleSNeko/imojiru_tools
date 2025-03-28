@@ -1,4 +1,6 @@
 /target
 /assets
-.DS_Store
-Cargo.lock
+/.DS_Store
+/.gdb_history
+/.vscode
+/Cargo.lock
