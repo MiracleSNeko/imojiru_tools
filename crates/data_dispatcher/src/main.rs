@@ -50,12 +50,14 @@ pub trait DeserializePatch {
 pub enum DataDispatcher {
     StringTable(StringTable),
     NameTable(NameTable),
+    FileNameTable(FileNameTable),
 }
 
 #[derive(Debug, Clone, Copy, Subcommand, ValueEnum)]
 enum DataDispatcherType {
     StringTable,
     NameTable,
+    FileNameTable,
 }
 
 impl DeserializePatch for DataDispatcher {
@@ -66,6 +68,9 @@ impl DeserializePatch for DataDispatcher {
             }
             DataDispatcher::NameTable(name_table) => {
                 Self::NameTable(name_table.deserialize_patch(cursor)?)
+            }
+            DataDispatcher::FileNameTable(fname_table) => {
+                Self::FileNameTable(fname_table.deserialize_patch(cursor)?)
             }
         })
     }
@@ -288,6 +293,78 @@ impl DeserializePatch for NameTable {
     }
 }
 
+///
+#[derive(Debug, Default, Serialize, PartialEq, Eq, Clone)]
+struct FileNameTableItem {
+    length: u16,
+    data: String,
+}
+
+impl DeserializePatch for FileNameTableItem {
+    fn deserialize_patch(&self, cursor: &mut Cursor<Vec<u8>>) -> AnyResult<Self> {
+        let mut file_name_table_item = Self::default();
+
+        // length: u16, little-endian <2 byte>
+        let mut length_bytes = [0; 2];
+        cursor.read_exact(&mut length_bytes)?;
+        file_name_table_item.length = u16::from_le_bytes(length_bytes);
+
+        // data: string (length bytes, padding to 4 bytes alignment)
+        //
+        // NOTE:
+        // the actual content of the string needs to be obtained by bitwise negation.
+        // and the padding can be ignored by [String::from_utf8] automatically.
+        let mut raw_data = vec![0; file_name_table_item.length as usize];
+        cursor.read_exact(&mut raw_data)?;
+        raw_data.iter_mut().for_each(|byte| *byte = !*byte);
+        let (string, _, _) = SHIFT_JIS.decode(&raw_data);
+        file_name_table_item.data = string.to_string();
+
+        Ok(file_name_table_item)
+    }
+}
+
+///
+#[derive(Debug, Default, Serialize, PartialEq, Eq, Clone)]
+pub struct FileNameTable {
+    item_count: u32,
+    assume_magic_number: u32,
+    items: Vec<FileNameTableItem>,
+}
+
+impl DataDispatcherHeader for FileNameTable {
+    const MAGIC_HEADER: &[u8] = b"[F-NAME]";
+}
+
+impl DeserializePatch for FileNameTable {
+    fn deserialize_patch(&self, cursor: &mut Cursor<Vec<u8>>) -> AnyResult<Self> {
+        // header: string <8 bytes>
+        cursor.seek(SeekFrom::Current(8))?;
+
+        // item_count: u32, little-endian <4 bytes>
+        let mut item_count_bytes = [0; 4];
+        cursor.read_exact(&mut item_count_bytes)?;
+        let item_count = u32::from_le_bytes(item_count_bytes);
+
+        // unknown (assume as magic number): u32, little-endian <4 bytes>
+        let mut assume_magic_number_bytes = [0; 4];
+        cursor.read_exact(&mut assume_magic_number_bytes)?;
+        let assume_magic_number = u32::from_le_bytes(assume_magic_number_bytes);
+
+        // item: [FileNameTableItem]
+        let mut items = vec![];
+        for _ in 0..item_count {
+            items.push(FileNameTableItem::default().deserialize_patch(cursor)?);
+        }
+
+        Ok(Self {
+            item_count,
+            assume_magic_number,
+            items,
+        })
+    }
+}
+
 fn main() -> AnyResult<()> {
     let args = ConsoleArgs::parse();
 
@@ -307,6 +384,10 @@ fn main() -> AnyResult<()> {
         DataDispatcherType::NameTable => (
             DataDispatcher::NameTable(NameTable::default()),
             NameTable::MAGIC_HEADER,
+        ),
+        DataDispatcherType::FileNameTable => (
+            DataDispatcher::FileNameTable(FileNameTable::default()),
+            FileNameTable::MAGIC_HEADER,
         ),
     };
 
