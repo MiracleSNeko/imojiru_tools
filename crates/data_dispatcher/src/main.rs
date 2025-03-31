@@ -71,7 +71,7 @@ impl DeserializePatch for DataDispatcher {
     }
 }
 
-/// item in tblstr.arc patch:
+/// item in string table patch:
 ///
 /// ```{text}
 /// 0                   1
@@ -130,7 +130,7 @@ impl DeserializePatch for StringTableItem {
     }
 }
 
-/// structure of tblstr.arc patch:
+/// structure of string table patch:
 ///
 /// ```{text}
 /// 0                   1
@@ -190,7 +190,7 @@ impl DeserializePatch for StringTable {
     }
 }
 
-/// item in tblname.arc patch:
+/// item in name table patch:
 ///
 /// ```{text}
 /// 0                   1
@@ -232,7 +232,7 @@ impl DeserializePatch for NameTableItem {
     }
 }
 
-/// structure of tblname.arc patch:
+/// structure of name table patch:
 ///
 /// ```{text}
 /// 0                   1
