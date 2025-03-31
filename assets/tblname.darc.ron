@@ -1,0 +1,78 @@
+NameTable((
+    assume_padding: 0,
+    item_count: 18,
+    items: [
+        (
+            length: 2,
+            data: "晶",
+        ),
+        (
+            length: 4,
+            data: "未卯",
+        ),
+        (
+            length: 4,
+            data: "結希",
+        ),
+        (
+            length: 8,
+            data: "？？？？",
+        ),
+        (
+            length: 2,
+            data: "梓",
+        ),
+        (
+            length: 4,
+            data: "シン",
+        ),
+        (
+            length: 8,
+            data: "未卯の声",
+        ),
+        (
+            length: 8,
+            data: "結希の声",
+        ),
+        (
+            length: 6,
+            data: "梓の声",
+        ),
+        (
+            length: 4,
+            data: "神父",
+        ),
+        (
+            length: 4,
+            data: "幸恵",
+        ),
+        (
+            length: 4,
+            data: "貞夫",
+        ),
+        (
+            length: 10,
+            data: "ラジオの声",
+        ),
+        (
+            length: 4,
+            data: "菜々",
+        ),
+        (
+            length: 10,
+            data: "未卯＆菜々",
+        ),
+        (
+            length: 14,
+            data: "菜々＆未卯＆晶",
+        ),
+        (
+            length: 8,
+            data: "菜々の声",
+        ),
+        (
+            length: 16,
+            data: "結希＆未卯＆菜々",
+        ),
+    ],
+))

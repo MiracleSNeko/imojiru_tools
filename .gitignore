@@ -1,5 +1,12 @@
 /target
-/assets
+/assets/.DS_Store
+/assets/BGM
+/assets/Save
+/assets/*.arc
+/assets/*.chm
+/assets/*.dll
+/assets/*.exe
+/assets/*.ini
 /.DS_Store
 /.gdb_history
 /.vscode
