@@ -13,6 +13,7 @@ license.workspace = true
 utils.workspace = true
 # external dependencies
 anyhow.workspace = true
-bytes.workspace = true
 clap.workspace = true
 encoding_rs.workspace = true
+ron.workspace = true
+serde.workspace = true
