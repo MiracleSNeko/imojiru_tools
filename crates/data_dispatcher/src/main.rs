@@ -293,7 +293,22 @@ impl DeserializePatch for NameTable {
     }
 }
 
+/// item in file name table patch:
+/// ```{text}
+/// 0                   1
+/// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+/// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+/// |LEN|            DATA           |
+/// +-+-+                     +-+-+-+
+/// |                         | PAD |
+/// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ///
+/// 0-1: length, u16 little-endian;
+/// 2-: data, string (length bytes, padding to 2 bytes alignment);
+/// ```
+///
+/// ## Note
+/// the actual content of the string needs to be obtained by bitwise negation.
 #[derive(Debug, Default, Serialize, PartialEq, Eq, Clone)]
 struct FileNameTableItem {
     length: u16,
@@ -324,7 +339,22 @@ impl DeserializePatch for FileNameTableItem {
     }
 }
 
+/// structure of file name table patch:
 ///
+/// ```{text}
+/// 0                   1
+/// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+/// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+/// |[|F|-|N|A|M|E|]|  CNT  |  UNK  |
+/// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+/// |LEN|    DATA   |LEN|    DATA   |
+/// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///
+/// 0-7: header, `[F-NAME]`;
+/// 8-11: item_count, u32 little-endian;
+/// 12-15: unknown (assume as magic number), u32 little-endian;
+/// 16-: item, [FileNameTableItem];
+/// ```
 #[derive(Debug, Default, Serialize, PartialEq, Eq, Clone)]
 pub struct FileNameTable {
     item_count: u32,
@@ -394,7 +424,10 @@ fn main() -> AnyResult<()> {
     let start_pos = buffer
         .windows(header.len())
         .position(|window| window == header)
-        .expect(&format!("header `{}` not found", String::from_utf8_lossy(header)));
+        .expect(&format!(
+            "header `{}` not found",
+            String::from_utf8_lossy(header)
+        ));
     let mut cursor = Cursor::new(buffer);
     cursor.seek(SeekFrom::Start(start_pos as u64))?;
 
