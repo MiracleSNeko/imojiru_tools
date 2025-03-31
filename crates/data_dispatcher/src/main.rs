@@ -394,7 +394,7 @@ fn main() -> AnyResult<()> {
     let start_pos = buffer
         .windows(header.len())
         .position(|window| window == header)
-        .expect(&format!("header {} not found", String::from_utf8_lossy(header)));
+        .expect(&format!("header `{}` not found", String::from_utf8_lossy(header)));
     let mut cursor = Cursor::new(buffer);
     cursor.seek(SeekFrom::Start(start_pos as u64))?;
 
