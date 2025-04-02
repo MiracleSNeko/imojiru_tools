@@ -3,7 +3,6 @@ members = ["crates/data_dispatcher", "crates/data_patcher", "crates/utils"]
 resolver = "2"
 
 [workspace.package]
-
 authors = ["MiracleSNeko <miracle.neko@qq.com>"]
 repository = "https://github.com/MiracleSNeko/imojiru_tools"
 edition = "2024"
